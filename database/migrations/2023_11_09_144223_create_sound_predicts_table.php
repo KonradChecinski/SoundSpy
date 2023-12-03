@@ -12,7 +12,7 @@ return new class extends Migration {
     {
         Schema::create('sound_predicts', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->references("id")->on("users")->restrictOnDelete();
+            $table->foreignId('user_id')->nullable()->references("id")->on("users")->restrictOnDelete();
             $table->json('result');
             $table->string('path');
             $table->timestamps();
