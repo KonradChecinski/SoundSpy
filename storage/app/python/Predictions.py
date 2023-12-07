@@ -5,25 +5,27 @@ from PIL import Image
 import json
 import time
 import numpy as np
+import os
+os.environ['MPLCONFIGDIR'] = "/var/www/app/storage/app/python/tmp/"
+os.environ[ 'NUMBA_CACHE_DIR' ] = '/tmp/'
 import matplotlib.pyplot as plt
 import librosa
 import librosa.display
 from pydub import AudioSegment
 import sys
 import uuid
-import os
+import pathlib
 
-start = time.time()
+# start = time.time()
 
 DESIRED_ASPECT_RATIO = 1.5
 WIDTH = 12
 DURATION = 30.0
 TARGET_SAMPLE_RATE = 22050
 HEIGHT = WIDTH / DESIRED_ASPECT_RATIO
-FILE = sys.argv[0]
+FILE = sys.argv[1]
 
-
-file_test = r'recordings\HIP-HOP\recording_Broke Boys.wav'
+# file_test = r'recordings\HIP-HOP\recording_Broke Boys.wav'
 
 
 def convert(filename: str, from_format: str, to_format: str):
@@ -36,44 +38,53 @@ def apply_low_pass_filter(audio, cutoff_freq):
     return audio.low_pass_filter(cutoff_freq)
 
 
-if file_test[:-3] == 'mp3':
-    convert(file_test, 'mp3', 'wav')
-elif file_test[:-3] == 'm4a':
-    convert(file_test, 'm4a', 'wav')
+if FILE[:-3] == 'mp3':
+    convert(FILE, 'mp3', 'wav')
+elif FILE[:-3] == 'm4a':
+    convert(FILE, 'm4a', 'wav')
 else:
     pass
 
-audio = AudioSegment.from_file(file_test)
+audio = AudioSegment.from_file(FILE)
 cutoff_frequency = 2500
 filtered_audio = apply_low_pass_filter(audio, cutoff_frequency)
 
-os.makedirs('DENOISED_AUDIO', exist_ok=True)
-song_name = str(uuid.uuid4())
+os.makedirs('/var/www/app/storage/app/python/DENOISED_AUDIO', exist_ok=True)
+song_name = str(f'{uuid.uuid4()}.wav')
+
+
 
 filtered_audio.export(os.path.join(
-    'DENOISED_AUDIO', song_name), format="wav")
+    '/var/www/app/storage/app/python/DENOISED_AUDIO', song_name), format="wav")
 
-y, sr = librosa.load(os.path.join('DENOISED_AUDIO', song_name))
+y, sr = librosa.load(os.path.join('/var/www/app/storage/app/python/DENOISED_AUDIO', song_name))
 y_resampled = librosa.resample(
     y, orig_sr=sr, target_sr=TARGET_SAMPLE_RATE, res_type='kaiser_best')
+
 if librosa.get_duration(y=y, sr=sr) > DURATION:
     start_time = max(0, librosa.get_duration(y=y, sr=sr) / 2 - DURATION / 2)
     end_time = start_time + DURATION
     y = y[int(start_time * sr):int(end_time * sr)]
+
 S = librosa.feature.melspectrogram(y=y, sr=sr)
 S_DB = librosa.amplitude_to_db(S, ref=np.max)
 plt.figure(figsize=(4, 3))
 librosa.display.specshow(S_DB, sr=sr, hop_length=512)
 plt.tick_params(left=False, right=False, labelleft=False,
                 labelbottom=False, bottom=False)
-os.makedirs('SPECTROGRAMS', exist_ok=True)
+
+os.makedirs('/var/www/app/storage/app/python/SPECTROGRAMS', exist_ok=True)
+
 spectrogram_name = str(uuid.uuid4())
-plt.savefig(f"{os.path.join('SPECTROGRAMS',spectrogram_name)}.png",
+plt.savefig(f"{os.path.join('/var/www/app/storage/app/python/SPECTROGRAMS',spectrogram_name)}.png",
             bbox_inches='tight', pad_inches=0)
-img = Image.open(f"{os.path.join('SPECTROGRAMS',spectrogram_name)}.png")
+
+img = Image.open(f"{os.path.join('/var/www/app/storage/app/python/SPECTROGRAMS',spectrogram_name)}.png")
+
 newsize = (432, 288)
 img = img.resize(newsize)
-img.save(f"{os.path.join('SPECTROGRAMS',spectrogram_name)}.png")
+
+img.save(f"{os.path.join('/var/www/app/storage/app/python/SPECTROGRAMS',spectrogram_name)}.png")
 plt.close()
 
 
@@ -84,26 +95,26 @@ transform = tt.Compose([
 top_n = 5
 
 class_labels = {
-    0: 'CLASSICAL',
-    1: 'DISCO',
+    0: 'Classical',
+    1: 'Disco',
     2: 'EDM',
-    3: 'FUNK',
-    4: 'HEAVY_METAL',
+    3: 'Funk',
+    4: 'Heavy metal',
     5: 'HIP-HOP',
-    6: 'JAZZ',
+    6: 'Jazz',
     7: 'POP',
-    8: 'REGGAE',
-    9: 'ROCK',
-    10: 'TECHNO'
+    8: 'Reggae',
+    9: 'Rock',
+    10: 'Techno'
 }
 
-image_path = f"{os.path.join('SPECTROGRAMS',spectrogram_name)}.png"
+image_path = f"{os.path.join('/var/www/app/storage/app/python/SPECTROGRAMS',spectrogram_name)}.png"
 input_image = Image.open(image_path)
 image_check = transform(input_image)
 image_rgb = input_image.convert("RGB")
 input_data = transform(image_rgb).unsqueeze(0)
 
-checkpoint = torch.load(r'models\best_DenseNet_169_checkpoint79.pth')
+checkpoint = torch.load(rf'{pathlib.Path(__file__).parent.resolve()}' + '/models/best_DenseNet_169_checkpoint79.pth', map_location=torch.device('cpu'))
 model_state_dict = checkpoint['model_state_dict']
 loaded_model = MusicGenrePretrainedDenseNet169()
 loaded_model.load_state_dict(model_state_dict)
@@ -136,5 +147,5 @@ with torch.no_grad():
     pretty_json = json.dumps(predictions_dict, indent=4)
     print(pretty_json)
 
-end = time.time()
-print("Total time:", end - start)
+# end = time.time()
+# print("Total time:", end - start)

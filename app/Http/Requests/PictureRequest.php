@@ -25,10 +25,11 @@ class PictureRequest extends FormRequest
         return [
             "picture" => [
                 'required',
-                File::image()
-                    ->min('1kb')
-                    ->max('2mb')
-                    ->types(['image/jpeg', 'image/png'])
+                'string'
+                // File::image()
+                //     ->min('1kb')
+                //     ->max('2mb')
+                //     ->types(['image/jpeg', 'image/png'])
             ]
         ];
     }

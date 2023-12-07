@@ -1,2 +1,5 @@
 !*
 !.gitignore
+tmp/
+SPECTROGRAMS/
+DENOISED_AUDIO/

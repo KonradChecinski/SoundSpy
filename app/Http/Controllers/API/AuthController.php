@@ -169,13 +169,32 @@ class AuthController extends Controller
     public function changePicture(PictureRequest $request): JsonResponse
     {
         $user = Auth::user();
-        $file = $request->picture;
-        do {
-            $name = uniqid() . "." . $file->getClientOriginalExtension();
-        } while (Storage::exists("favicon/" . $name));
+        
+        $image_64 = $request->picture; //your base64 encoded data
+        $extension = explode('/', explode(':', substr($image_64, 0, strpos($image_64, ';')))[1])[1];   // .jpg .png .pdf
+        $replace = substr($image_64, 0, strpos($image_64, ',')+1); 
+      
+      // find substring fro replace here eg: data:image/png;base64,
+      
+       $image = str_replace($replace, '', $image_64); 
+       $image = str_replace(' ', '+', $image); 
+      
+       
 
-        Storage::putFileAs("favicon/", $file, $name);
-        $url = route("favicon", ["favicon" => $name]);
+
+       do {
+        $imageName = uniqid().'.'.$extension;
+       } while (Storage::exists("favicon" . $imageName));
+
+      $isSave = Storage::put("favicon/$imageName", base64_decode($image));
+
+       if(!$isSave){
+        return response()->json([
+            'message' => 'Invalid file',
+        ], 500);
+       }
+      
+        $url = route("favicon", ["favicon" => $imageName]);
 
         $user->update(['picture' => $url]);
 
