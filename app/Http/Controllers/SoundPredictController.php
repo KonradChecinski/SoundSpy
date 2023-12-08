@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Middleware\OptionalAuthSanctum;
 use App\Http\Requests\AddToHistorySoundPredictRequest;
+use App\Http\Requests\StoreHistorySoundPredictRequest;
 use App\Models\SoundPredict;
 use App\Http\Requests\StoreSoundPredictRequest;
 use App\Http\Requests\UpdateSoundPredictRequest;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use robertogallea\LaravelPython\Services\LaravelPython;
@@ -45,28 +47,26 @@ class SoundPredictController extends Controller
 
         $image_64 = $request->sound; //your base64 encoded data
         $extension = explode('/', explode(':', substr($image_64, 0, strpos($image_64, ';')))[1])[1];   // .jpg .png .pdf
-        $replace = substr($image_64, 0, strpos($image_64, ',')+1); 
-      
-      // find substring fro replace here eg: data:image/png;base64,
-       $image = str_replace($replace, '', $image_64); 
-       $image = str_replace(' ', '+', $image); 
-      
-       
+        $replace = substr($image_64, 0, strpos($image_64, ',') + 1);
+
+        // find substring fro replace here eg: data:image/png;base64,
+        $image = str_replace($replace, '', $image_64);
+        $image = str_replace(' ', '+', $image);
 
 
-       do {
-        $imageName = uniqid().'.'.$extension;
-       } while (Storage::exists("sound" . $imageName));
+        do {
+            $imageName = uniqid() . '.' . $extension;
+        } while (Storage::exists("sound" . $imageName));
 
-      $isSave = Storage::put("sound/$imageName", base64_decode($image));
+        $isSave = Storage::put("sound/$imageName", base64_decode($image));
 
-       if($isSave){
-$path = "sound/$imageName";
-       }else{
-        return response()->json([
-            'message' => 'Invalid file',
-        ], 500);
-       }
+        if ($isSave) {
+            $path = "sound/$imageName";
+        } else {
+            return response()->json([
+                'message' => 'Invalid file',
+            ], 500);
+        }
 
         //moment piotrkowy
         $service = new LaravelPython();
@@ -95,44 +95,40 @@ $path = "sound/$imageName";
 
     }
 
-//     public function addToHisotry(AddToHistorySoundPredictRequest $request)
-//     {
-// //        $user = Auth::user();
-// //        $file = $request->sound;
-// //        do {
-// //            $name = uniqid() . "." . $file->getClientOriginalExtension();
-// //        } while (Storage::exists("sound/" . $name));
-// //
-// //        $path = Storage::putFileAs("sound/", $file, $name);
-// //
-// //
-// //        //moment piotrkowy
-// //
-// //        $result = json_encode([
-// //            "pop" => 99.9149,
-// //            "hiphop" => 0.0248,
-// //            "jazz" => 0.0176,
-// //            "disco" => 0.0079,
-// //            "rock" => 0.0050,
-// //        ]);
-// //
-// //
-// //        if (is_null($user)) {
-// //            $soundPredict = SoundPredict::create([
-// //                'result' => $result,
-// //                'path' => $path,
-// //            ]);
-// //        } else {
-// //            $soundPredict = $user->soundPredicts()->create([
-// //                'result' => $result,
-// //                'path' => $path,
-// //            ]);
-// //        }
+    public function addToHistory(StoreHistorySoundPredictRequest $request)
+    {
+        $user = Auth::user();
+        $totalQuantity = count($request->history);
+        $successQuantity = 0;
 
-//         return response()->json([
-//             'predict' => $soundPredict,
-//         ], 200);
+        foreach ($request->history as $item) {
+            $soundPredict = SoundPredict::query()->where("user_id", null)->where("id", $item["id"])->first();
+            if (is_null($soundPredict)) {
+                continue;
+            }
 
-//     }
+            if (json_decode($soundPredict->result) != json_decode($item["result"]) || strtotime($soundPredict->created_at) != strtotime($item["created_at"])) {
+                continue;
+            }
+            $user->soundPredicts()->save($soundPredict);
+            $successQuantity++;
+        }
+
+        return response()->json([
+            'message' => 'History added',
+            'total' => $totalQuantity,
+            'success' => $successQuantity,
+        ], 200);
+    }
+
+    public function deleteHistory(Request $request)
+    {
+        $user = Auth::user();
+        $user->soundPredicts()->update(["user_id" => null]);
+        return response()->json([
+            'message' => 'History deleted',
+        ], 200);
+    }
+
 
 }

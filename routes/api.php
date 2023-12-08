@@ -49,7 +49,8 @@ Route::middleware(['throttle:120,1'])->group(function () {
     Route::controller(SoundPredictController::class)->prefix("predict")->group(function () {
         Route::get('/', 'index');
         Route::post('/', 'store');
-        Route::post('/history', 'addToHisotry');
+        Route::post('/history', 'addToHistory');
+        Route::delete('/history', 'deleteHistory');
     });
 
 
