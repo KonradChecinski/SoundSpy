@@ -15,26 +15,21 @@ class StoreHistorySoundPredictRequest extends FormRequest
         return true;
     }
 
-//    protected function prepareForValidation()
-//    {
-//        $this->merge([
-//            "history" => json_decode($this->history),
-//        ]);
-//    }
-    public function validator($factory)
-    {
-        return $factory->make(
-            $this->sanitize(), $this->container->call([$this, 'rules']), $this->messages()
-        );
-    }
+    // public function validator($factory)
+    // {
+    //     return $factory->make(
+    //         $this->sanitize(), $this->container->call([$this, 'rules']), $this->messages()
+    //     );
+    // }
 
-    public function sanitize()
-    {
-        $this->merge([
-            'history' => json_decode($this->input('history'), true)
-        ]);
-        return $this->all();
-    }
+    // public function sanitize()
+    // {
+    //     dd($this->all());
+    //     $this->merge([
+    //         'history' => json_decode($this->input('history'), true)
+    //     ]);
+    //     return $this->all();
+    // }
 
     /**
      * Get the validation rules that apply to the request.

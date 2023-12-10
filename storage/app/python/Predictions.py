@@ -100,7 +100,7 @@ class_labels = {
     2: 'EDM',
     3: 'Funk',
     4: 'Heavy metal',
-    5: 'HIP-HOP',
+    5: 'Hip_hop',
     6: 'Jazz',
     7: 'POP',
     8: 'Reggae',

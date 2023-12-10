@@ -3,6 +3,7 @@
 /public/build
 /public/hot
 /public/storage
+/public/predictions.json
 /storage/*.key
 /vendor
 .env
