@@ -98,23 +98,23 @@ class SoundPredictController extends Controller
     public function addToHistory(StoreHistorySoundPredictRequest $request)
     {
         $user = Auth::user();
-        $totalQuantity = count($request->history);
+        $totalQuantity = !is_null($request->history) ? count($request->history) : 0;
         $successQuantity = 0;
 
+        if (!is_null($request->history)) {
+            foreach ($request->history as $item) {
+                $soundPredict = SoundPredict::query()->where("user_id", null)->where("id", $item["id"])->first();
+                if (is_null($soundPredict)) {
+                    continue;
+                }
 
-        foreach ($request->history as $item) {
-            $soundPredict = SoundPredict::query()->where("user_id", null)->where("id", $item["id"])->first();
-            if (is_null($soundPredict)) {
-                continue;
+                if (json_decode($soundPredict->result) != json_decode($item["result"]) || strtotime($soundPredict->created_at) != strtotime($item["created_at"])) {
+                    continue;
+                }
+                $user->soundPredicts()->save($soundPredict);
+                $successQuantity++;
             }
-
-            if (json_decode($soundPredict->result) != json_decode($item["result"]) || strtotime($soundPredict->created_at) != strtotime($item["created_at"])) {
-                continue;
-            }
-            $user->soundPredicts()->save($soundPredict);
-            $successQuantity++;
         }
-
         return response()->json([
             'message' => 'History added',
             'total' => $totalQuantity,

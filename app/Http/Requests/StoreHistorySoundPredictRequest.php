@@ -39,12 +39,12 @@ class StoreHistorySoundPredictRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "history" => "required|array",
-            "history.*.id" => "required|numeric",
+            "history" => "array|nullable",
+            "history.*.id" => "required_with_all:history|numeric",
             "history.*.user_id" => "numeric|nullable",
-            "history.*.result" => "required|json",
-            "history.*.created_at" => "required|date",
-            "history.*.updated_at" => "required|date|after_or_equal:created_at",
+            "history.*.result" => "required_with_all:history|json",
+            "history.*.created_at" => "required_with_all:history|date",
+            "history.*.updated_at" => "required_with_all:history|date|after_or_equal:created_at",
         ];
     }
 }
