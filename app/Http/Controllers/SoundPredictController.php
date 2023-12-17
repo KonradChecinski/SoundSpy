@@ -20,9 +20,65 @@ class SoundPredictController extends Controller
         $this->middleware('auth:sanctum', ['except' => ['store']]);
     }
 
+
     /**
-     * Display a listing of the resource.
+     * @OA\Get(
+     *      tags={"Predict"},
+     *      path="/predict",
+     *      summary="Get user's predictions",
+     *     @OA\Response(
+     *          response="200",
+     *          description="Success",
+     *          @OA\JsonContent(
+     *              type="object",
+     *              @OA\Property(
+     *                   property="predicts",
+     *                   type="array",
+     *                   @OA\Items(
+     *                       type="object",
+     *                       @OA\Property(
+     *                          property="id",
+     *                          type="int",
+     *                      ),
+     *                      @OA\Property(
+     *                           property="user_id",
+     *                           type="int",
+     *                             nullable= true,
+     *                          default=null
+     *                       ),
+     *                      @OA\Property(
+     *                           property="result",
+     *                           type="string",
+     *                       ),
+     *                      @OA\Property(
+     *                            property="created_at",
+     *                            type="date",
+     *                        ),
+     *                      @OA\Property(
+     *                            property="updated_at",
+     *                            type="date",
+     *                        ),
+     *                   ),
+     *              ),
+     *
+     *          ),
+     *      ),
+     *          @OA\Response(
+     *            response="402",
+     *            description="Unauthorized",
+     *            @OA\JsonContent(
+     *                type="object",
+     *                @OA\Property(
+     *                      property="message",
+     *                      type="string",
+     *                      default="Unauthorized"
+     *                ),
+     *            ),
+     *        ),
+     * )
      */
+
+
     public function index()
     {
         $user = Auth::user();
@@ -35,8 +91,66 @@ class SoundPredictController extends Controller
 
 
     /**
-     * Store a newly created resource in storage.
+     * @OA\Post(
+     *      tags={"Predict"},
+     *      path="/predict",
+     *      summary="Send sound to predict genre of song",
+     *     @OA\Parameter(
+     *            name="sound",
+     *            in="query",
+     *            description="sound",
+     *            required=true,
+     *            @OA\Schema(type="base64")
+     *        ),
+     *     @OA\Response(
+     *          response="200",
+     *          description="Success",
+     *          @OA\JsonContent(
+     *              type="object",
+     *              @OA\Property(
+     *                   property="predict",
+     *                   type="object",
+     *                      @OA\Property(
+     *                          property="id",
+     *                          type="int",
+     *                      ),
+     *                      @OA\Property(
+     *                           property="user_id",
+     *                           type="int",
+     *                             nullable= true,
+     *                          default=null
+     *                       ),
+     *                      @OA\Property(
+     *                           property="result",
+     *                           type="string",
+     *                       ),
+     *                      @OA\Property(
+     *                            property="created_at",
+     *                            type="date",
+     *                        ),
+     *                      @OA\Property(
+     *                            property="updated_at",
+     *                            type="date",
+     *                        ),
+     *              ),
+     *
+     *          ),
+     *      ),
+     *          @OA\Response(
+     *            response="500",
+     *            description="Error",
+     *            @OA\JsonContent(
+     *                type="object",
+     *                @OA\Property(
+     *                      property="message",
+     *                      type="string",
+     *                      default="Invalid file"
+     *                ),
+     *            ),
+     *        ),
+     * )
      */
+
     public function store(StoreSoundPredictRequest $request)
     {
         if (request()->bearerToken() && $user = Auth::guard('sanctum')->user()) {
@@ -95,6 +209,118 @@ class SoundPredictController extends Controller
 
     }
 
+    /**
+     * @OA\Post(
+     *      tags={"Predict"},
+     *      path="/predict/history",
+     *      summary="send user's local history",
+     *     @OA\Parameter(
+     *             name="history",
+     *             in="query",
+     *             description="history array",
+     *             required=true,
+     *             @OA\JsonContent(
+     *               type="object",
+     *               @OA\Property(
+     *                    property="history",
+     *                    type="array",
+     *                    @OA\Items(
+     *                        type="object",
+     *                        @OA\Property(
+     *                           property="id",
+     *                           type="int",
+     *                       ),
+     *                       @OA\Property(
+     *                            property="user_id",
+     *                            type="int",
+     *                              nullable= true,
+     *                           default=null
+     *                        ),
+     *                       @OA\Property(
+     *                            property="result",
+     *                            type="string",
+     *                        ),
+     *                       @OA\Property(
+     *                             property="created_at",
+     *                             type="date",
+     *                         ),
+     *                       @OA\Property(
+     *                             property="updated_at",
+     *                             type="date",
+     *                         ),
+     *                    ),
+     *               ),
+     *
+     *           ),
+     *         ),
+     *     @OA\Response(
+     *          response="200",
+     *          description="Success",
+     *          @OA\JsonContent(
+     *              type="object",
+     *              @OA\Property(
+     *                    property="message",
+     *                    type="string",
+     *                    default="History added"
+     *              ),
+     *              @OA\Property(
+     *                     property="total",
+     *                     type="int",
+     *                     default="3"
+     *               ),
+     *              @OA\Property(
+     *                     property="success",
+     *                     type="int",
+     *                     default="2"
+     *               ),
+     *              @OA\Property(
+     *                   property="history",
+     *                   type="array",
+     *                   @OA\Items(
+     *                       type="object",
+     *                       @OA\Property(
+     *                          property="id",
+     *                          type="int",
+     *                      ),
+     *                      @OA\Property(
+     *                           property="user_id",
+     *                           type="int",
+     *                             nullable= true,
+     *                          default=null
+     *                       ),
+     *                      @OA\Property(
+     *                           property="result",
+     *                           type="string",
+     *                       ),
+     *                      @OA\Property(
+     *                            property="created_at",
+     *                            type="date",
+     *                        ),
+     *                      @OA\Property(
+     *                            property="updated_at",
+     *                            type="date",
+     *                        ),
+     *                   ),
+     *              ),
+     *
+     *          ),
+     *      ),
+     *          @OA\Response(
+     *            response="402",
+     *            description="Unauthorized",
+     *            @OA\JsonContent(
+     *                type="object",
+     *                @OA\Property(
+     *                      property="message",
+     *                      type="string",
+     *                      default="Unauthorized"
+     *                ),
+     *            ),
+     *        ),
+     * )
+     */
+
+
     public function addToHistory(StoreHistorySoundPredictRequest $request)
     {
         $user = Auth::user();
@@ -122,6 +348,38 @@ class SoundPredictController extends Controller
             'history' => $user->soundPredicts,
         ], 200);
     }
+
+    /**
+     * @OA\Delete(
+     *      tags={"Predict"},
+     *      path="/predict/history",
+     *      summary="Delete user's predictions",
+     *     @OA\Response(
+     *          response="200",
+     *          description="Success",
+     *          @OA\JsonContent(
+     *              type="object",
+     *              @OA\Property(
+     *                   property="message",
+     *                   type="string",
+     *                      default="History deleted",
+     *              )
+     *          ),
+     *      ),
+     *          @OA\Response(
+     *            response="402",
+     *            description="Unauthorized",
+     *            @OA\JsonContent(
+     *                type="object",
+     *                @OA\Property(
+     *                      property="message",
+     *                      type="string",
+     *                      default="Unauthorized"
+     *                ),
+     *            ),
+     *        ),
+     * )
+     */
 
     public function deleteHistory(Request $request)
     {

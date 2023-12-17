@@ -26,8 +26,10 @@ class AuthController extends Controller
     }
 
     /**
-     * @OA\Post(
-     *     path="/api/auth/exist",
+     * @OA\Get(
+     *     tags={"Auth"},
+     *     path="/auth/exist",
+     *     summary="Cos2",
      *     summary="Check if user with email exist",
      *     @OA\Parameter(
      *         name="email",
@@ -36,8 +38,25 @@ class AuthController extends Controller
      *         required=true,
      *         @OA\Schema(type="string")
      *     ),
-     *     @OA\Response(response="200", exist=true),
-     *     @OA\Response(response="200", exist=false),
+     *     @OA\Response(
+     *         response="200",
+     *         description="Exist",
+     *         content={
+     *              @OA\MediaType(
+     *                  mediaType="application/json",
+     *                  @OA\Schema(
+     *                      @OA\Property(
+     *                          property="exist",
+     *                          type="bool",
+     *                          description="Is exists"
+     *                      ),
+     *                      example={
+     *                          "exist": true,
+     *                      }
+     *                  )
+     *              )
+     *          }
+     *     ),
      * )
      */
 
@@ -50,6 +69,88 @@ class AuthController extends Controller
             'exist' => (bool)$exist,
         ], 200);
     }
+
+    /**
+     * @OA\Post(
+     *      tags={"Auth"},
+     *      path="/auth/login",
+     *      summary="Login user",
+     *      @OA\Parameter(
+     *          name="email",
+     *          in="query",
+     *          description="User's email",
+     *          required=true,
+     *          @OA\Schema(type="email")
+     *      ),
+     *      @OA\Parameter(
+     *           name="password",
+     *           in="query",
+     *           description="User's password",
+     *           required=true,
+     *           @OA\Schema(type="password")
+     *       ),
+     *     @OA\Response(
+     *          response="200",
+     *          description="Success",
+     *          @OA\JsonContent(
+     *              type="object",
+     *              @OA\Property(
+     *                   property="user",
+     *                   type="object",
+     *                   @OA\Property(
+     *                      property="id",
+     *                      type="int",
+     *                  ),
+     *                  @OA\Property(
+     *                      property="google_id",
+     *                      type="int",
+     *                  ),
+     *                  @OA\Property(
+     *                      property="name",
+     *                      type="string",
+     *                 ),
+     *                 @OA\Property(
+     *                       property="email",
+     *                       type="string",
+     *                 ),
+     *                 @OA\Property(
+     *                      property="email_verified_at",
+     *                      type="date",
+     *                 ),
+     *                 @OA\Property(
+     *                      property="picture",
+     *                      type="string",
+     *                 ),
+     *              ),
+     *              @OA\Property(
+     *                 property="authorization",
+     *                 type="object",
+     *                 @OA\Property(
+     *                      property="token",
+     *                      type="string",
+     *                 ),
+     *                 @OA\Property(
+     *                       property="type",
+     *                       type="string",
+     *                  ),
+     *          ),
+     *
+     *          ),
+     *      ),
+     *     @OA\Response(
+     *           response="401",
+     *           description="Failed",
+     *           @OA\JsonContent(
+     *               type="object",
+     *               @OA\Property(
+     *                    property="message",
+     *                    type="string",
+     *                    default="Invalid credentials"
+     *              ),
+     *          )
+     *      ),
+     * )
+     */
 
     public function login(LoginRequest $request): JsonResponse
     {
@@ -70,6 +171,80 @@ class AuthController extends Controller
             'message' => 'Invalid credentials',
         ], 401);
     }
+
+    /**
+     * @OA\Post(
+     *      tags={"Auth"},
+     *      path="/auth/register",
+     *      summary="Register user",
+     *      @OA\Parameter(
+     *          name="email",
+     *          in="query",
+     *          description="User's email",
+     *          required=true,
+     *          @OA\Schema(type="email")
+     *      ),
+     *      @OA\Parameter(
+     *           name="password",
+     *           in="query",
+     *           description="User's password",
+     *           required=true,
+     *           @OA\Schema(type="password")
+     *       ),
+     *     @OA\Response(
+     *          response="200",
+     *          description="Success",
+     *          @OA\JsonContent(
+     *              type="object",
+     *              @OA\Property(
+     *                    property="message",
+     *                    type="string",
+     *                    default="User created successfully"
+     *              ),
+     *              @OA\Property(
+     *                   property="user",
+     *                   type="object",
+     *                   @OA\Property(
+     *                      property="id",
+     *                      type="int",
+     *                  ),
+     *                  @OA\Property(
+     *                      property="google_id",
+     *                      type="int",
+     *                  ),
+     *                  @OA\Property(
+     *                      property="name",
+     *                      type="string",
+     *                 ),
+     *                 @OA\Property(
+     *                       property="email",
+     *                       type="string",
+     *                 ),
+     *                 @OA\Property(
+     *                      property="email_verified_at",
+     *                      type="date",
+     *                 ),
+     *                 @OA\Property(
+     *                      property="picture",
+     *                      type="string",
+     *                 ),
+     *              ),
+     *              @OA\Property(
+     *                 property="authorization",
+     *                 type="object",
+     *                 @OA\Property(
+     *                      property="token",
+     *                      type="string",
+     *                 ),
+     *                 @OA\Property(
+     *                       property="type",
+     *                       type="string",
+     *                  ),
+     *              ),
+     *          ),
+     *      ),
+     * )
+     */
 
     public function register(RegisterRequest $request): JsonResponse
     {
@@ -92,6 +267,38 @@ class AuthController extends Controller
         ]);
     }
 
+    /**
+     * @OA\Post(
+     *      tags={"Auth"},
+     *      path="/auth/logout",
+     *      summary="Logout user",
+     *     @OA\Response(
+     *          response="200",
+     *          description="Success",
+     *          @OA\JsonContent(
+     *              type="object",
+     *              @OA\Property(
+     *                    property="message",
+     *                    type="string",
+     *                    default="Successfully logged out"
+     *              ),
+     *          ),
+     *      ),
+     *     @OA\Response(
+     *           response="402",
+     *           description="Unauthorized",
+     *           @OA\JsonContent(
+     *               type="object",
+     *               @OA\Property(
+     *                     property="message",
+     *                     type="string",
+     *                     default="Unauthorized"
+     *               ),
+     *           ),
+     *       ),
+     * )
+     */
+
     public function logout(): JsonResponse
     {
         Auth::user()->tokens()->delete();
@@ -99,6 +306,74 @@ class AuthController extends Controller
             'message' => 'Successfully logged out',
         ]);
     }
+
+    /**
+     * @OA\Post(
+     *      tags={"Auth"},
+     *      path="/auth/refresh",
+     *      summary="Refresh user token",
+     *     @OA\Response(
+     *          response="200",
+     *          description="Success",
+     *          @OA\JsonContent(
+     *              type="object",
+     *              @OA\Property(
+     *                   property="user",
+     *                   type="object",
+     *                   @OA\Property(
+     *                      property="id",
+     *                      type="int",
+     *                  ),
+     *                  @OA\Property(
+     *                      property="google_id",
+     *                      type="int",
+     *                  ),
+     *                  @OA\Property(
+     *                      property="name",
+     *                      type="string",
+     *                 ),
+     *                 @OA\Property(
+     *                       property="email",
+     *                       type="string",
+     *                 ),
+     *                 @OA\Property(
+     *                      property="email_verified_at",
+     *                      type="date",
+     *                 ),
+     *                 @OA\Property(
+     *                      property="picture",
+     *                      type="string",
+     *                 ),
+     *              ),
+     *              @OA\Property(
+     *                 property="authorization",
+     *                 type="object",
+     *                 @OA\Property(
+     *                      property="token",
+     *                      type="string",
+     *                 ),
+     *                 @OA\Property(
+     *                       property="type",
+     *                       type="string",
+     *                  ),
+     *          ),
+     *
+     *          ),
+     *      ),
+     *     @OA\Response(
+     *           response="402",
+     *           description="Unauthorized",
+     *           @OA\JsonContent(
+     *               type="object",
+     *               @OA\Property(
+     *                     property="message",
+     *                     type="string",
+     *                     default="Unauthorized"
+     *               ),
+     *           ),
+     *       ),
+     * )
+     */
 
     public function refresh(): JsonResponse
     {
@@ -156,6 +431,45 @@ class AuthController extends Controller
         }
     }
 
+    /**
+     * @OA\Patch(
+     *      tags={"Auth"},
+     *      path="/auth/name",
+     *      summary="Change user's name",
+     *     @OA\Parameter(
+     *           name="name",
+     *           in="query",
+     *           description="User's name",
+     *           required=true,
+     *           @OA\Schema(type="string")
+     *       ),
+     *     @OA\Response(
+     *          response="200",
+     *          description="Success",
+     *          @OA\JsonContent(
+     *              type="object",
+     *              @OA\Property(
+     *                    property="message",
+     *                    type="string",
+     *                    default="Change successfully"
+     *              ),
+     *          ),
+     *      ),
+     *     @OA\Response(
+     *           response="402",
+     *           description="Unauthorized",
+     *           @OA\JsonContent(
+     *               type="object",
+     *               @OA\Property(
+     *                     property="message",
+     *                     type="string",
+     *                     default="Unauthorized"
+     *               ),
+     *           ),
+     *       ),
+     * )
+     */
+
     public function changeName(NameRequest $request): JsonResponse
     {
         $user = Auth::user();
@@ -166,34 +480,71 @@ class AuthController extends Controller
         ], 200);
     }
 
+    /**
+     * @OA\Post(
+     *      tags={"Auth"},
+     *      path="/auth/picture",
+     *      summary="Change user's picture",
+     *     @OA\Parameter(
+     *           name="picture",
+     *           in="query",
+     *           description="picture",
+     *           required=true,
+     *           @OA\Schema(type="base64")
+     *       ),
+     *     @OA\Response(
+     *          response="200",
+     *          description="Success",
+     *          @OA\JsonContent(
+     *              type="object",
+     *              @OA\Property(
+     *                    property="message",
+     *                    type="string",
+     *                    default="Picture upload successfully"
+     *              ),
+     *          ),
+     *      ),
+     *     @OA\Response(
+     *           response="402",
+     *           description="Unauthorized",
+     *           @OA\JsonContent(
+     *               type="object",
+     *               @OA\Property(
+     *                     property="message",
+     *                     type="string",
+     *                     default="Unauthorized"
+     *               ),
+     *           ),
+     *       ),
+     * )
+     */
+
     public function changePicture(PictureRequest $request): JsonResponse
     {
         $user = Auth::user();
-        
+
         $image_64 = $request->picture; //your base64 encoded data
         $extension = explode('/', explode(':', substr($image_64, 0, strpos($image_64, ';')))[1])[1];   // .jpg .png .pdf
-        $replace = substr($image_64, 0, strpos($image_64, ',')+1); 
-      
-      // find substring fro replace here eg: data:image/png;base64,
-      
-       $image = str_replace($replace, '', $image_64); 
-       $image = str_replace(' ', '+', $image); 
-      
-       
+        $replace = substr($image_64, 0, strpos($image_64, ',') + 1);
+
+        // find substring fro replace here eg: data:image/png;base64,
+
+        $image = str_replace($replace, '', $image_64);
+        $image = str_replace(' ', '+', $image);
 
 
-       do {
-        $imageName = uniqid().'.'.$extension;
-       } while (Storage::exists("favicon" . $imageName));
+        do {
+            $imageName = uniqid() . '.' . $extension;
+        } while (Storage::exists("favicon" . $imageName));
 
-      $isSave = Storage::put("favicon/$imageName", base64_decode($image));
+        $isSave = Storage::put("favicon/$imageName", base64_decode($image));
 
-       if(!$isSave){
-        return response()->json([
-            'message' => 'Invalid file',
-        ], 500);
-       }
-      
+        if (!$isSave) {
+            return response()->json([
+                'message' => 'Invalid file',
+            ], 500);
+        }
+
         $url = route("favicon", ["favicon" => $imageName]);
 
         $user->update(['picture' => $url]);
@@ -202,6 +553,48 @@ class AuthController extends Controller
             'message' => 'Picture upload successfully',
         ], 200);
     }
+
+    /**
+     * @OA\Get(
+     *      tags={"Auth"},
+     *      path="/auth/logindata",
+     *      summary="Get user's name and picture",
+     *     @OA\Parameter(
+     *           name="picture",
+     *           in="query",
+     *           description="picture",
+     *           required=true,
+     *           @OA\Schema(type="base64")
+     *       ),
+     *     @OA\Response(
+     *          response="200",
+     *          description="Success",
+     *          @OA\JsonContent(
+     *              type="object",
+     *              @OA\Property(
+     *                    property="name",
+     *                    type="string",
+     *              ),
+     *              @OA\Property(
+     *                     property="picture",
+     *                     type="string",
+     *               ),
+     *          ),
+     *      ),
+     *     @OA\Response(
+     *            response="401",
+     *            description="Failed",
+     *            @OA\JsonContent(
+     *                type="object",
+     *                @OA\Property(
+     *                     property="message",
+     *                     type="string",
+     *                     default="Invalid credentials"
+     *               ),
+     *           )
+     *       ),
+     * )
+     */
 
     public function getLoginData(LoginDataRequest $request): JsonResponse
     {

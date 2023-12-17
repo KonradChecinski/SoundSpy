@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\OtherController;
 use App\Http\Controllers\SoundPredictController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -23,16 +24,7 @@ Route::middleware(['throttle:120,1'])->group(function () {
     });
 
 
-    Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-        $user = Auth::user();
-        return response()->json([
-            'user' => $user,
-            'authorization' => [
-                'token' => $request->bearerToken(),
-                'type' => 'bearer',
-            ]
-        ]);
-    });
+    Route::middleware('auth:sanctum')->get('/user', [OtherController::class, 'getUser']);
 
     Route::controller(AuthController::class)->prefix("auth")->group(function () {
         Route::post('login', 'login');
