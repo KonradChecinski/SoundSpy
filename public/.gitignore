@@ -1,1 +1,8 @@
 predictions.json
+assets/*
+assets
+bundles
+bundles/*
+index.html
+metadata.json
+favicon.ico

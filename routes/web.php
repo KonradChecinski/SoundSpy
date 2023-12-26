@@ -14,10 +14,13 @@ use Illuminate\Support\Facades\Storage;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+// Route::get('/', function () {
+//     return view('welcome');
+// });
 
+Route::get('/{any_path?}', function () {
+        return view('index');
+})->where('any_path', '(.*)');
 
 Route::get("favicon/{favicon}", function ($favicon) {
 //        header("Content-Type: image/jpeg");
