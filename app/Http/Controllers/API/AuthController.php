@@ -285,7 +285,7 @@ class AuthController extends Controller
      *          ),
      *      ),
      *     @OA\Response(
-     *           response="402",
+     *           response="401",
      *           description="Unauthorized",
      *           @OA\JsonContent(
      *               type="object",
@@ -361,7 +361,7 @@ class AuthController extends Controller
      *          ),
      *      ),
      *     @OA\Response(
-     *           response="402",
+     *           response="401",
      *           description="Unauthorized",
      *           @OA\JsonContent(
      *               type="object",
@@ -456,7 +456,7 @@ class AuthController extends Controller
      *          ),
      *      ),
      *     @OA\Response(
-     *           response="402",
+     *           response="401",
      *           description="Unauthorized",
      *           @OA\JsonContent(
      *               type="object",
@@ -505,7 +505,7 @@ class AuthController extends Controller
      *          ),
      *      ),
      *     @OA\Response(
-     *           response="402",
+     *           response="401",
      *           description="Unauthorized",
      *           @OA\JsonContent(
      *               type="object",
@@ -560,11 +560,11 @@ class AuthController extends Controller
      *      path="/auth/logindata",
      *      summary="Get user's name and picture",
      *     @OA\Parameter(
-     *           name="picture",
+     *           name="email",
      *           in="query",
-     *           description="picture",
+     *           description="email",
      *           required=true,
-     *           @OA\Schema(type="base64")
+     *           @OA\Schema(type="string")
      *       ),
      *     @OA\Response(
      *          response="200",

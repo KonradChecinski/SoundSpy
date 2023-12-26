@@ -18,11 +18,10 @@ use Illuminate\Support\Facades\Storage;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
-Route::middleware(['throttle:120,1'])->group(function () {
+Route::middleware(['throttle:60,1'])->group(function () {
     Route::get('/', function (Request $request) {
         return response()->json(['it works']);
     });
-
 
     Route::middleware('auth:sanctum')->get('/user', [OtherController::class, 'getUser']);
 
