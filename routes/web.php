@@ -18,12 +18,14 @@ use Illuminate\Support\Facades\Storage;
 //     return view('welcome');
 // });
 
-Route::get('/{any_path?}', function () {
-        return view('index');
-})->where('any_path', '(.*)');
 
 Route::get("favicon/{favicon}", function ($favicon) {
 //        header("Content-Type: image/jpeg");
 
     return Storage::get("favicon/" . $favicon);
 })->name("favicon");
+
+
+Route::get('/{any_path?}', function () {
+    return view('index');
+})->where('any_path', '(.*)');
