@@ -388,6 +388,109 @@ class AuthController extends Controller
         ]);
     }
 
+    /**
+     * @OA\Post(
+     *      tags={"Auth"},
+     *      path="/auth/glogin",
+     *      summary="Login google user",
+     *     @OA\Parameter(
+     *           name="google_id",
+     *           in="query",
+     *           description="User's google id",
+     *           required=true,
+     *           @OA\Schema(type="int")
+     *       ),
+     *      @OA\Parameter(
+     *          name="email",
+     *          in="query",
+     *          description="User's google email",
+     *          required=true,
+     *          @OA\Schema(type="email")
+     *      ),
+     *     @OA\Parameter(
+     *           name="name",
+     *           in="query",
+     *           description="User's google name",
+     *           required=true,
+     *           @OA\Schema(type="string")
+     *       ),
+     *     @OA\Parameter(
+     *            name="picture",
+     *            in="query",
+     *            description="User's favicon url",
+     *            required=true,
+     *            @OA\Schema(type="string")
+     *        ),
+     *      @OA\Parameter(
+     *           name="verified_email",
+     *           in="query",
+     *           description="If User verified his email",
+     *           required=true,
+     *           @OA\Schema(type="boolean")
+     *       ),
+     *     @OA\Response(
+     *          response="200",
+     *          description="Success",
+     *          @OA\JsonContent(
+     *              type="object",
+     *              @OA\Property(
+     *                   property="user",
+     *                   type="object",
+     *                   @OA\Property(
+     *                      property="id",
+     *                      type="int",
+     *                  ),
+     *                  @OA\Property(
+     *                      property="google_id",
+     *                      type="int",
+     *                  ),
+     *                  @OA\Property(
+     *                      property="name",
+     *                      type="string",
+     *                 ),
+     *                 @OA\Property(
+     *                       property="email",
+     *                       type="string",
+     *                 ),
+     *                 @OA\Property(
+     *                      property="email_verified_at",
+     *                      type="date",
+     *                 ),
+     *                 @OA\Property(
+     *                      property="picture",
+     *                      type="string",
+     *                 ),
+     *              ),
+     *              @OA\Property(
+     *                 property="authorization",
+     *                 type="object",
+     *                 @OA\Property(
+     *                      property="token",
+     *                      type="string",
+     *                 ),
+     *                 @OA\Property(
+     *                       property="type",
+     *                       type="string",
+     *                  ),
+     *          ),
+     *
+     *          ),
+     *      ),
+     *     @OA\Response(
+     *           response="401",
+     *           description="Failed",
+     *           @OA\JsonContent(
+     *               type="object",
+     *               @OA\Property(
+     *                    property="message",
+     *                    type="string",
+     *                    default="Invalid credentials"
+     *              ),
+     *          )
+     *      ),
+     * )
+     */
+
     public function googleLogin(GoogleLoginRequest $request): JsonResponse
     {
         $user = User::query()->where('email', $request->email)->first();
