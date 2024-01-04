@@ -246,7 +246,7 @@
                             }
                         }
                     },
-                    "402": {
+                    "401": {
                         "description": "Unauthorized",
                         "content": {
                             "application/json": {
@@ -320,7 +320,7 @@
                             }
                         }
                     },
-                    "402": {
+                    "401": {
                         "description": "Unauthorized",
                         "content": {
                             "application/json": {
@@ -329,6 +329,127 @@
                                         "message": {
                                             "type": "string",
                                             "default": "Unauthorized"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/glogin": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Login google user",
+                "operationId": "c91dda91208097bad1ec4874cc87fd83",
+                "parameters": [
+                    {
+                        "name": "google_id",
+                        "in": "query",
+                        "description": "User's google id",
+                        "required": true,
+                        "schema": {
+                            "type": "int"
+                        }
+                    },
+                    {
+                        "name": "email",
+                        "in": "query",
+                        "description": "User's google email",
+                        "required": true,
+                        "schema": {
+                            "type": "email"
+                        }
+                    },
+                    {
+                        "name": "name",
+                        "in": "query",
+                        "description": "User's google name",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "picture",
+                        "in": "query",
+                        "description": "User's favicon url",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "verified_email",
+                        "in": "query",
+                        "description": "If User verified his email",
+                        "required": true,
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "user": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer"
+                                                },
+                                                "google_id": {
+                                                    "type": "integer"
+                                                },
+                                                "name": {
+                                                    "type": "string"
+                                                },
+                                                "email": {
+                                                    "type": "string"
+                                                },
+                                                "email_verified_at": {
+                                                    "type": "string",
+                                                    "format": "date"
+                                                },
+                                                "picture": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "authorization": {
+                                            "properties": {
+                                                "token": {
+                                                    "type": "string"
+                                                },
+                                                "type": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Failed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "default": "Invalid credentials"
                                         }
                                     },
                                     "type": "object"
@@ -374,7 +495,7 @@
                             }
                         }
                     },
-                    "402": {
+                    "401": {
                         "description": "Unauthorized",
                         "content": {
                             "application/json": {
@@ -428,7 +549,7 @@
                             }
                         }
                     },
-                    "402": {
+                    "401": {
                         "description": "Unauthorized",
                         "content": {
                             "application/json": {
@@ -456,12 +577,12 @@
                 "operationId": "2f1f0b708caa44b7ce71219927e417ae",
                 "parameters": [
                     {
-                        "name": "picture",
+                        "name": "email",
                         "in": "query",
-                        "description": "picture",
+                        "description": "email",
                         "required": true,
                         "schema": {
-                            "type": "base64"
+                            "type": "string"
                         }
                     }
                 ],
