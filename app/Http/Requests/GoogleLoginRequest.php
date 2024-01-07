@@ -22,11 +22,11 @@ class GoogleLoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'id'=>'required|numeric',
-            'email'=>'required|unique:users',
-            'name'=>'required|string',
-            'picture'=>'required|string',
-            'verified_email'=>'required|boolean',
+            'id' => 'required|numeric',
+            'email' => 'required',
+            'name' => 'required|string',
+            'picture' => 'required|string',
+            'verified_email' => 'required|boolean',
         ];
     }
 }
